@@ -29,10 +29,10 @@ Make sure your www user can write to /YOURREPO/manifests and /YOURREPO/munki-enr
 
 The included munki-enroll.sh script needs a couple bits set:
 
-SUBMITURL="https://munki.domain/repo/munki-enroll/enroll.php"
-PORT=443
-RUNFILE=/usr/local/munki/.runfile
-RUNLIMIT=10
+	SUBMITURL="https://munki.domain/repo/munki-enroll/enroll.php"
+	PORT=443
+	RUNFILE=/usr/local/munki/.runfile
+	RUNLIMIT=10
 
 	SUBMITURL="https://munki/munki-enroll/enroll.php"
 
