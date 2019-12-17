@@ -3,7 +3,7 @@ A lovingly updated `munki-enroll`.
 
 A set of scripts to automatically enroll clients in Munki, allowing for a very flexible manifest structure.
 
-This version is my a deeply modified rewrite of the original, Copyright (c) 2012 Cody Eding, to suit my (and hopefully your) needs .
+This version is a deeply modified rewrite of the original, Copyright (c) 2012 Cody Eding, to suit my (and hopefully your) needs .
 See below and LICENSE file for licensing details.
 
 ## Essential Reading
@@ -39,13 +39,22 @@ If `munki-enroll.sh` fails to contact your `SUBMITURL`on `PORT`, it moves itself
 
 ## Things to Know
 
-Currently theres a bit of error checking both server-side in `enroll.php` and in `munki-enroll.sh`. 
+Currently theres a bit of error checking both server-side in `enroll.php` and in `munki-enroll.sh`:
 - `enroll.php` won't let an existing record be overwritten.
 - `enroll.php` won't run without `RECORDNAME` and `DISPLAYNAME` .
 - `munki-enroll.sh` will drop into `/usr/munki/conditions` if it fails to contact your `SUBMITURL`on `PORT` and will run as a Conditional Item with managedsoftwareupdate.
 - Theres a `RUNLIMIT` wen running from `/usr/munki/conditions` as well. If exceeded, the `munki-enroll.sh` gives up and self destructs.
 
-
+Some niceties and expectations:
+-`enroll.php` has a logging facility that logs to `/munki-enroll/log/munki-enroll.log` just in case there are some rouge requests out there
+-`enroll.php` as a few exit codes. 
+`0` successful creation of a new manifest
+`1` not enough arguments
+`9`	manifest exists 
+-`enroll.php` can accept up to four included manifests. Simple provide manifest1, manifest2, manifest3 and/or manifest4 variables to it.
+-`munki-enroll.sh` must be run as root.
+-`munki-enroll.sh` pushes the computer `UUID` to `enroll.php` which drops it into a `notes` and `uuid` strings.
+-`munki-enroll.sh` pulls `AdditionalHttpHeaders` from `ManagedInstalls` with the expectation that your repo is protected by HTTP Basic Authentication. If you are limiting access to `enroll.php` without Basic Authentication, simply remove `-u "$AUTH"` from the curl statement.
 
 ## [License](https://github.com/peetinc/munki-enroll/blob/master/LICENSE)
 

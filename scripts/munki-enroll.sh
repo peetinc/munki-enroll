@@ -46,7 +46,7 @@ if [ $PORTTEST != 0 ]; then
 	# (plist is left off since defaults requires this)
 	plist_loc="$managedinstalldir/ConditionalItems"
 	# Note the key "munki-enroll" which becomes the condition that you would use in a predicate statement
-	defaults write "$plist_loc" "munki-enroll" -string "SERVER-UNREACHABLE"
+	defaults write "$plist_loc" "munki-enroll" -string "UNREACHABLE"
 	plutil -convert xml1 "$plist_loc".plist
 	
 	if [[ $SCRIPT_FOLDER != /usr/local/munki/conditions ]]; then
