@@ -16,7 +16,7 @@ I just needed something a bit cleaner with some error checking and recovery.
 
 ## How does this differ from regular Munki Enroll's?
 
-Like [aysiu/munki-serial-enroll](https://github.com/aysiu/munki-serial-enroll/) and [grahampugh/munki-enroll](https://github.com/grahampugh/munki-enroll/), [peetinc/munki-enroll](https://github.com/peetinc/munki-enroll/) focuses on a one manifest per client workflow. See above for more reading, but unlike [aysiu/munki-serial-enroll](https://github.com/aysiu/munki-serial-enroll/), this project uses [TECLIB/CFPropertyList](https://github.com/TECLIB/CFPropertyList)], it may be a bit long in tooth, but it profides an infinitely more flexibly fremwork for createing and hopefully managing and updating manifests. Seriously, who doesn't want the option update the display_name when the computer name changes? (Okay, A LOT of people, but I really do want that bit of cleanliness.)
+Like [aysiu/munki-serial-enroll](https://github.com/aysiu/munki-serial-enroll/) and [grahampugh/munki-enroll](https://github.com/grahampugh/munki-enroll/), [peetinc/munki-enroll](https://github.com/peetinc/munki-enroll/) focuses on a one manifest per client workflow. See above for more reading, but unlike [aysiu/munki-serial-enroll](https://github.com/aysiu/munki-serial-enroll/), this project uses [TECLIB/CFPropertyList](https://github.com/TECLIB/CFPropertyList)], it may be a bit long in tooth, but it profides an infinitely more flexibly fremwork for creating and hopefully managing and updating manifests. Seriously, who doesn't want the option update the display_name when the computer name changes? (Okay, A LOT of people, but I really do want that bit of cleanliness.)
 
 ## Installation
 
@@ -35,7 +35,7 @@ The included munki-enroll.sh script needs a couple variables set:
 	RUNFILE=/usr/local/munki/.runfile
 	RUNLIMIT=10
 
-If `munki-enroll.sh` fails to contact your `SUBMITURL`on `PORT`, it moves itself into `/usr/munki/conditions` and runs other Conditional Items. If it successfully creates a manifest or finds that theres a manifest with its `RECORDNAME` (defaulted to computer serial number) it deletes itself from `/usr/munki/conditions`. 
+If `munki-enroll.sh` fails to contact your `SUBMITURL`on `PORT`, it moves itself into `/usr/munki/conditions` and runs other Conditional Items. If it successfully creates a manifest or finds that there's a manifest with its `RECORDNAME` (defaulted to computer serial number) it deletes itself from `/usr/munki/conditions`. 
 
 ## Things to Know
 
