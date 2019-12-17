@@ -47,13 +47,7 @@ Currently theres a bit of error checking both server-side in `enroll.php` and in
 
 Some niceties and expectations:
 - `enroll.php` has a logging facility that logs to `/munki-enroll/log/munki-enroll.log` just in case there are some rouge requests out there
-- `enroll.php` as a few exit codes. 
-
-`0` successful creation of a new manifest
-
-`1` not enough arguments
-
-`9`	manifest exists 
+- `enroll.php` as a few exit codes.  `0` successful creation of a new manifest  `1` not enough arguments  `9` manifest exists 
 
 - `enroll.php` can accept up to four included manifests. Simple provide manifest1, manifest2, manifest3 and/or manifest4 variables to it.
 - `munki-enroll.sh` must be run as root.
