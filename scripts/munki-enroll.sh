@@ -77,9 +77,9 @@ if [ "$PORTTEST" = 0 ]; then
   	  -d displayname="$DISPLAYNAME" \
   	  -d uuid="$UUID" \
   	  -u "$AUTH" "$SUBMITURL"`
+  	  
+    # If not basic authentication, then just "$SUBMITURL" for the last line 
       
-      # If not basic authentication, then just "$SUBMITURL" for the last line 
-	
 	echo $SUBMIT
 
 	RESULT="${SUBMIT##*$'\n'}"

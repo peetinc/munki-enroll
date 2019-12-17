@@ -16,66 +16,28 @@ $defaultcatalog = 'production';
 //if $recordname is not passed, set to _NOT-PROVIDED_
 if (!($recordname = filter_input(INPUT_GET, 'recordname', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)))
 	{
-<<<<<<< HEAD
-<<<<<<< HEAD
 		$recordname = '_NOT-PROVIDED_'; 
-=======
-	    $recordname = '_NOT-PROVIDED_'; 
->>>>>>> 2087d4899f4e069c08e23816d4a409650960bccd
-=======
-	    $recordname = '_NOT-PROVIDED_'; 
->>>>>>> 2087d4899f4e069c08e23816d4a409650960bccd
 	}
 //if $displayname is not passed, set to _NOT-PROVIDED_
 if (!($displayname = filter_input(INPUT_GET, 'displayname', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)))
 	{
-<<<<<<< HEAD
-<<<<<<< HEAD
 		$displayname = '_NOT-PROVIDED_'; 
-=======
-	    $displayname = '_NOT-PROVIDED_'; 
->>>>>>> 2087d4899f4e069c08e23816d4a409650960bccd
-=======
-	    $displayname = '_NOT-PROVIDED_'; 
->>>>>>> 2087d4899f4e069c08e23816d4a409650960bccd
 	}
 //if $catalog is not passed, set to $defaultcatalog
 if (!($catalog = filter_input(INPUT_GET, 'catalog', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)))
 	{
-<<<<<<< HEAD
-<<<<<<< HEAD
 		$catalog = $defaultcatalog; 
-=======
-	    $catalog = $defaultcatalog; 
->>>>>>> 2087d4899f4e069c08e23816d4a409650960bccd
-=======
-	    $catalog = $defaultcatalog; 
->>>>>>> 2087d4899f4e069c08e23816d4a409650960bccd
 	}
 //if $manifest1 is not passed, set to $defaultmanifest
 if (!($manifest1 = filter_input(INPUT_GET, 'manifest1', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES))) 
 	{
-<<<<<<< HEAD
-<<<<<<< HEAD
 		$manifest1 = $defaultmanifest; 
-=======
-	    $manifest1 = $defaultmanifest; 
->>>>>>> 2087d4899f4e069c08e23816d4a409650960bccd
-=======
-	    $manifest1 = $defaultmanifest; 
->>>>>>> 2087d4899f4e069c08e23816d4a409650960bccd
 	}
 $manifest2 = filter_input(INPUT_GET, 'manifest2', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 $manifest3 = filter_input(INPUT_GET, 'manifest3', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 $manifest4 = filter_input(INPUT_GET, 'manifest4', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
-<<<<<<< HEAD
-<<<<<<< HEAD
 $uuid = filter_input(INPUT_GET, 'uuid', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 
-=======
->>>>>>> 2087d4899f4e069c08e23816d4a409650960bccd
-=======
->>>>>>> 2087d4899f4e069c08e23816d4a409650960bccd
 
 // end if no variables provided
 if ( $recordname == "_NOT-PROVIDED_" or $displayname == "_NOT-PROVIDED_" )
@@ -93,8 +55,6 @@ echo "MUNKI-ENROLLER. Checking for existing manifests.\n\n";
 
 
 if ( file_exists( $manifestspath . $recordname ) )
-<<<<<<< HEAD
-<<<<<<< HEAD
 	{
 		echo "Computer manifest " . $recordname . " already exists.\n";
 		echo "You're trying to be naughty.\n";
@@ -102,21 +62,6 @@ if ( file_exists( $manifestspath . $recordname ) )
 		$result = 'FAILURE - EXISTING MANIFEST';
 		logger($result, $recordname, $displayname, $catalog, $manifest1, $manifest2, $manifest3, $manifest4);
 		exit(9);
-=======
-=======
->>>>>>> 2087d4899f4e069c08e23816d4a409650960bccd
-    {
-        echo "Computer manifest " . $recordname . " already exists.\n";
-        echo "You're trying to be naughty.\n";
-        echo "Checking out now.\n\n";
-        echo "1";
-        $result = 'FAILURE - EXISTING MANIFEST';
-		logger($result, $recordname, $displayname, $catalog, $manifest1, $manifest2, $manifest3, $manifest4);
-        exit(1);
-<<<<<<< HEAD
->>>>>>> 2087d4899f4e069c08e23816d4a409650960bccd
-=======
->>>>>>> 2087d4899f4e069c08e23816d4a409650960bccd
     }
     
 // Ensure we aren't nesting a manifest within itself
@@ -140,8 +85,6 @@ echo "Here's hoping you changed the computername before enrolling.\n";
 
 if ( $manifest1 != $defaultmanifest or $manifest2 != "" or $manifest3 != "" or $manifest4 != "" )
 	{
-<<<<<<< HEAD
-<<<<<<< HEAD
 		echo "Another heads up, if the manifests you provided are not valid, they will still be included. There is no error checking.\n";
 	}
 
@@ -149,27 +92,11 @@ if ( $catalog != $defaultcatalog )
 	{
 		echo "Another heads up, if the catalog name you provided is not valid, it will still be included. There is no error checking.\n";
 	}
-=======
-=======
->>>>>>> 2087d4899f4e069c08e23816d4a409650960bccd
-        echo "Another heads up, if the manifests you provided are not valid, they will still be included. There is no error checking.\n";
-    }
-
-if ( $catalog != $defaultcatalog )
-	{
-        echo "Another heads up, if the catalog name you provided is not valid, it will still be included. There is no error checking.\n";
-    }
-<<<<<<< HEAD
->>>>>>> 2087d4899f4e069c08e23816d4a409650960bccd
-=======
->>>>>>> 2087d4899f4e069c08e23816d4a409650960bccd
 
     
 $plist = new CFPropertyList();
 $plist->add( $dict = new CFDictionary() );
         
-<<<<<<< HEAD
-<<<<<<< HEAD
 	// Add manifest to production catalog by default
 	$dict->add( 'catalogs', $array = new CFArray() );
 	$array->add( new CFString( $catalog ) );
@@ -214,50 +141,6 @@ $plist->add( $dict = new CFDictionary() );
 	echo "Included Manifest(s): " . $manifest1 . " " . $manifest2 . " " . $manifest3 . " " . $manifest4 . "\n\n";
 	echo "0";
 	$result = 'SUCCESS';
-=======
-=======
->>>>>>> 2087d4899f4e069c08e23816d4a409650960bccd
-    // Add manifest to production catalog by default
-    $dict->add( 'catalogs', $array = new CFArray() );
-    $array->add( new CFString( $catalog ) );
-    
-    //Add Display Name
-    $dict->add( 'display_name', new CFString( $displayname ) );
-        
-    // Add parent manifest to included_manifests to achieve waterfall effect
-    $dict->add( 'included_manifests', $array = new CFArray() );
-    if ( $manifest1 != "" )
-        {
-            $array->add( new CFString( $manifest1 ) );
-        }
-    if ( $manifest2 != "" )
-        {
-            $array->add( new CFString( $manifest2 ) );
-        }
-    if ( $manifest3 != "" )
-        {
-            $array->add( new CFString( $manifest3 ) );
-        }
-    if ( $manifest4 != "" )
-        {
-            $array->add( new CFString( $manifest4 ) );
-        }
-
-    // Format the plist
-    // Save the newly created plist
-    $xml = $plist->toXML($formatted=true);
-    file_put_contents($manifestspath . $recordname, $xml);
-    //$plist->saveXML( '../manifests/' . $recordname );
-    
-    echo "\nNew manifest created: " . $recordname . "\n";
-    echo "New manifest display_name: " . $displayname . "\n";
-    echo "Included Manifest(s): " . $manifest1 . " " . $manifest2 . " " . $manifest3 . " " . $manifest4 . "\n\n";
-    echo "0";
-    $result = 'SUCCESS';
-<<<<<<< HEAD
->>>>>>> 2087d4899f4e069c08e23816d4a409650960bccd
-=======
->>>>>>> 2087d4899f4e069c08e23816d4a409650960bccd
 	logger($result, $recordname, $displayname, $catalog, $manifest1, $manifest2, $manifest3, $manifest4);
 
 ?>

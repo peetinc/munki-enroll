@@ -1,5 +1,5 @@
 # munki-enroll
-A lovingly updated munki-enroll.
+A lovingly updated `munki-enroll`.
 
 A set of scripts to automatically enroll clients in Munki, allowing for a very flexible manifest structure.
 
@@ -7,7 +7,8 @@ This version is my a deeply modified rewrite of the original, Copyright (c) 2012
 See below and LICENSE file for licensing details.
 
 ## Essential Reading
-Before you even think about using Munki Serial Enroll, Munki Enroll, or anything like these projects, please read [An opinionated guide to Munki manifests](https://groob.io/posts/manifest-guide/) and [Another opinionated guide to Munki manifests](http://technology.siprep.org/another-opinionated-guide-to-munki-manifests/) first.
+
+Before you even think about using any Munki Enroll, or anything like these projects, please read [An opinionated guide to Munki manifests](https://groob.io/posts/manifest-guide/) and [Another opinionated guide to Munki manifests](http://technology.siprep.org/another-opinionated-guide-to-munki-manifests/) first.
 
 ## Why Yet Another Munki Enroll?
 
@@ -19,11 +20,11 @@ Like [aysiu/munki-serial-enroll](https://github.com/aysiu/munki-serial-enroll/) 
 
 ## Installation
 
-Munki Enroll requires PHP to be working on the webserver hosting your Munki repository. As well as www write access to /YOURREPO/manifests.
+Munki Enroll requires PHP to be working on the webserver hosting your Munki repository. As well as www write access to `manifests`.
 
 Copy the "munki-enroll" folder to the root of your Munki repository (the same directory as pkgs, pkginfo, manifests and catalogs). 
 
-Make sure your www user can write to /YOURREPO/manifests and /YOURREPO/munki-enroll/logs/
+Make sure your www user can write to `manifests` and `munki-enroll/logs/`
 
 ## Client Configuration
 
@@ -34,17 +35,18 @@ The included munki-enroll.sh script needs a couple bits set:
 	RUNFILE=/usr/local/munki/.runfile
 	RUNLIMIT=10
 
-If `munki-enroll.sh`
+If `munki-enroll.sh` fails to contact your `SUBMITURL`on `PORT`, it moves itself into `/usr/munki/conditions` and runs other Conditional Items. If it successfully creates a manifest or finds that theres a manifest with its `RECORDNAME` (defaulted to computer serial number) it deletes itself from `/usr/munki/conditions`. 
+
+## Things to Know
+
+Currently theres a bit of error checking both server-side in `enroll.php` and in `munki-enroll.sh`. 
+- `enroll.php` won't let an existing record be overwritten.
+- `enroll.php` won't run without `RECORDNAME` and `DISPLAYNAME` .
+- `munki-enroll.sh` will drop into `/usr/munki/conditions` if it fails to contact your `SUBMITURL`on `PORT` and will run as a Conditional Item with managedsoftwareupdate.
+- Theres a `RUNLIMIT` wen running from `/usr/munki/conditions` as well. If exceeded, the `munki-enroll.sh` gives up and self destructs.
 
 
-## Caveats
 
-Currently, Munki Enroll lacks any kind of error checking. It works perfectly fine in my environment without it. Your mileage may vary.
-
-Your web server must have access to write to your Munki repository. I suggest combining SSL and Basic Authentication (you're doing this anyway, right?) on your Munki repository to help keep nefarious things out. To do this, edit the CURL command in munki_enroll.sh to include the following flag:
-
-	--user "USERNAME:PASSWORD;" 
-
-## License
+## [License](https://github.com/peetinc/munki-enroll/blob/master/LICENSE)
 
 Munki Enroll, like the contained CFPropertyList project, is published under the [MIT License](http://www.opensource.org/licenses/mit-license.php).
