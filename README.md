@@ -46,15 +46,15 @@ Currently theres a bit of error checking both server-side in `enroll.php` and in
 - Theres a `RUNLIMIT` wen running from `/usr/munki/conditions` as well. If exceeded, the `munki-enroll.sh` gives up and self destructs.
 
 Some niceties and expectations:
--`enroll.php` has a logging facility that logs to `/munki-enroll/log/munki-enroll.log` just in case there are some rouge requests out there
--`enroll.php` as a few exit codes. 
+- `enroll.php` has a logging facility that logs to `/munki-enroll/log/munki-enroll.log` just in case there are some rouge requests out there
+- `enroll.php` as a few exit codes. 
 `0` successful creation of a new manifest
 `1` not enough arguments
 `9`	manifest exists 
--`enroll.php` can accept up to four included manifests. Simple provide manifest1, manifest2, manifest3 and/or manifest4 variables to it.
--`munki-enroll.sh` must be run as root.
--`munki-enroll.sh` pushes the computer `UUID` to `enroll.php` which drops it into a `notes` and `uuid` strings.
--`munki-enroll.sh` pulls `AdditionalHttpHeaders` from `ManagedInstalls` with the expectation that your repo is protected by HTTP Basic Authentication. If you are limiting access to `enroll.php` without Basic Authentication, simply remove `-u "$AUTH"` from the curl statement.
+- `enroll.php` can accept up to four included manifests. Simple provide manifest1, manifest2, manifest3 and/or manifest4 variables to it.
+- `munki-enroll.sh` must be run as root.
+- `munki-enroll.sh` pushes the computer `UUID` to `enroll.php` which drops it into a `notes` and `uuid` strings.
+- `munki-enroll.sh` pulls `AdditionalHttpHeaders` from `ManagedInstalls` with the expectation that your repo is protected by HTTP Basic Authentication. If you are limiting access to `enroll.php` without Basic Authentication, simply remove `-u "$AUTH"` from the curl statement.
 
 ## [License](https://github.com/peetinc/munki-enroll/blob/master/LICENSE)
 
