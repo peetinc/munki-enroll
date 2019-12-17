@@ -28,7 +28,7 @@ Make sure your www user can write to `manifests` and `munki-enroll/logs/`
 
 ## Client Configuration
 
-The included munki-enroll.sh script needs a couple bits set:
+The included munki-enroll.sh script needs a couple variables set:
 
 	SUBMITURL="https://munki.domain/repo/munki-enroll/enroll.php"
 	PORT=443
@@ -47,7 +47,7 @@ Currently theres a bit of error checking both server-side in `enroll.php` and in
 
 Some niceties and expectations:
 - `enroll.php` has a logging facility that logs to `/munki-enroll/log/munki-enroll.log` just in case there are some rouge requests out there
-- `enroll.php` as a few exit codes. 
+- `enroll.php` as a few exit codes:
 	- `0` successful creation of a new manifest
 	- `1` not enough arguments
 	- `9`	manifest exists 
