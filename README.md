@@ -34,8 +34,7 @@ The included munki-enroll.sh script needs a couple bits set:
 	RUNFILE=/usr/local/munki/.runfile
 	RUNLIMIT=10
 
-	SUBMITURL="https://munki/munki-enroll/enroll.php"
-
+If `munki-enroll.sh`
 
 
 ## Caveats
