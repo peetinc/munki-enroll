@@ -9,7 +9,7 @@ require_once 'logger.php';
 $manifestspath = '../manifests/';
 
 //Set default manifest and catalog
-$defaultmanifest = 'Management/Manditory';
+$defaultmanifest = 'Management/Mandatory';
 $defaultcatalog = 'production';
 
 // Get the varibles passed by the enroll script
