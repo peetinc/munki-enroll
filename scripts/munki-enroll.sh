@@ -1,12 +1,9 @@
 #!/bin/bash 
 
-##### Tweak on the original Munki-Enroll
-##### This has different logic based on whether the computer is a desktop or a laptop
-##### If it's a laptop, the script grabs the user's full name
-##### If it's a desktop, the script just grabs the computer's name
 ##### This version of the script also assumes you have an https-enabled Munki server with basic authentication
+##### If you do not change the SUBMITURL and PORT as needed. Also comment out "-u "$AUTH" \" 
 ##### Change SUBMITURL's variable value to your actual URL
-##### Also change YOURLOCALADMINACCOUNT if you have one
+##### 
 
 #######################
 ## User-set variables
@@ -34,7 +31,7 @@ if [[ $SCRIPT_FOLDER = /usr/local/munki/conditions ]]; then
 	fi
 fi
 
-# Make sure there is an active Internet connection
+# Make sure we can reach the $SUBMITURL $PORT
 SHORTURL=$(/bin/echo "$SUBMITURL" | /usr/bin/awk -F/ '{print $3}')
 PORTTEST=$(/usr/bin/nc -z "$SHORTURL" "$PORT") 
 PORTTEST=$?
@@ -61,14 +58,14 @@ if [ $PORTTEST != 0 ]; then
 fi
 
 if [ "$PORTTEST" = 0 ]; then
-	# Get the serial number and computer name
+	# Get the serial number and computer name and hardware UUID
 	RECORDNAME=$(/usr/sbin/system_profiler SPHardwareDataType | /usr/bin/awk '/Serial Number/ { print $4; }')
 	DISPLAYNAME=$(/usr/sbin/scutil --get ComputerName | /usr/bin/sed 's/ /-/g')
 	UUID=$(system_profiler SPHardwareDataType | awk '/UUID/ { print $3; }')
 
-	echo "RECORDNAME = $RECORDNAME: DISPLAYNAME: $DISPLAYNAME - UUID: $UUID"
+	echo "RECORDNAME = $RECORDNAME, DISPLAYNAME = $DISPLAYNAME, UUID = $UUID"
 
-	# Get the authorization information from ManagedINstallesPlist
+	# Get the authorization information from ManagedInstallesPlist
  	AUTH=$( /usr/bin/defaults read /var/root/Library/Preferences/ManagedInstalls.plist AdditionalHttpHeaders | /usr/bin/awk -F 'Basic ' '{print $2}' | /usr/bin/sed 's/.$//' | /usr/bin/base64 --decode )
 
 	# Send information to the server to make the manifest
@@ -76,9 +73,10 @@ if [ "$PORTTEST" = 0 ]; then
   	  -d recordname="$RECORDNAME" \
   	  -d displayname="$DISPLAYNAME" \
   	  -d uuid="$UUID" \
-  	  -u "$AUTH" "$SUBMITURL"`
+  	  -u "$AUTH" \
+	  "$SUBMITURL"`
   	  
-    # If not basic authentication, then just "$SUBMITURL" for the last line 
+    # If not basic authentication, then comment out "-u "$AUTH" \"
       
 	echo $SUBMIT
 
@@ -98,5 +96,5 @@ if [ "$PORTTEST" = 0 ]; then
 	fi
 	exit $RESULT
 	else
-		exit -1
+	exit -1
 fi
