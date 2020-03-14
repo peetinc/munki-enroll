@@ -17,6 +17,7 @@ RUNLIMIT=10
 # folder containging script
 SCRIPT_FOLDER=`dirname "$0"`
 
+# Quick root check
 if [ $EUID != 0 ]; then
         echo "This script must be run as root. Please sudo accordingly."
 	exit 1
