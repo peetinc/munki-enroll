@@ -17,6 +17,11 @@ RUNLIMIT=10
 # folder containging script
 SCRIPT_FOLDER=`dirname "$0"`
 
+if [ $EUID != 0 ]; then
+        echo "This script must be run as root. Please sudo accordingly."
+	exit 1
+fi
+
 if [[ $SCRIPT_FOLDER = /usr/local/munki/conditions ]]; then	
 	[[ ! -f "$RUNFILE" ]] && echo 0 > $RUNFILE
 	COUNTER=$(tail -1 "$RUNFILE")
