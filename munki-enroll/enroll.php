@@ -23,10 +23,10 @@ if (!($displayname = filter_input(INPUT_GET, 'displayname', FILTER_SANITIZE_STRI
 	{
 		$displayname = '_NOT-PROVIDED_'; 
 	}
-//if $catalog is not passed, set to $defaultcatalog
-if (!($catalog = filter_input(INPUT_GET, 'catalog', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)))
+//if $catalog1 is not passed, set to $defaultcatalog
+if (!($catalog1 = filter_input(INPUT_GET, 'catalog1', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)))
 	{
-		$catalog = $defaultcatalog; 
+		$catalog1 = $defaultcatalog; 
 	}
 //if $manifest1 is not passed, set to $defaultmanifest
 if (!($manifest1 = filter_input(INPUT_GET, 'manifest1', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES))) 
@@ -36,6 +36,8 @@ if (!($manifest1 = filter_input(INPUT_GET, 'manifest1', FILTER_SANITIZE_STRING, 
 $manifest2 = filter_input(INPUT_GET, 'manifest2', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 $manifest3 = filter_input(INPUT_GET, 'manifest3', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 $manifest4 = filter_input(INPUT_GET, 'manifest4', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+$catalog2 = filter_input(INPUT_GET, 'catalog2', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+$catalog3 = filter_input(INPUT_GET, 'catalog3', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 $uuid = filter_input(INPUT_GET, 'uuid', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 
 
@@ -46,12 +48,12 @@ if ( $recordname == "_NOT-PROVIDED_" or $displayname == "_NOT-PROVIDED_" )
 		echo "Checking out now.\n\n";
 		echo "1";
 		$result = 'FAILURE - NOT ENOUGH ARGUMENTS';
-		logger($result, $recordname, $displayname, $catalog, $manifest1, $manifest2, $manifest3, $manifest4);
+		logger($result, $recordname, $displayname, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4);
 		exit(1);
 	}
 	
 // Check if manifest already exists for this machine
-echo "MUNKI-ENROLLER. Checking for existing manifests.\n\n";
+echo "MUNKI-ENROLL. Checking for existing manifests.\n\n";
 
 
 if ( file_exists( $manifestspath . $recordname ) )
@@ -60,7 +62,7 @@ if ( file_exists( $manifestspath . $recordname ) )
 		echo "You're trying to be naughty.\n";
 		echo "9";
 		$result = 'FAILURE - EXISTING MANIFEST';
-		logger($result, $recordname, $displayname, $catalog, $manifest1, $manifest2, $manifest3, $manifest4);
+		logger($result, $recordname, $displayname, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4);
 		exit(9);
     }
     
@@ -73,7 +75,7 @@ if ( $manifest1 == $recordname or $manifest2 == $recordname or $manifest3 == $re
 		echo "Checking out now.\n\n";
 		echo "1";
 		$result = 'FAILURE - RECURSIVE MANIFSEST';
-		logger($result, $recordname, $displayname, $catalog, $manifest1, $manifest2, $manifest3, $manifest4);
+		logger($result, $recordname, $displayname, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4);
 		exit(1);
 	}
 
@@ -88,7 +90,7 @@ if ( $manifest1 != $defaultmanifest or $manifest2 != "" or $manifest3 != "" or $
 		echo "Another heads up, if the manifests you provided are not valid, they will still be included. There is no error checking.\n";
 	}
 
-if ( $catalog != $defaultcatalog )
+if ( $catalog1 != $defaultcatalog )
 	{
 		echo "Another heads up, if the catalog name you provided is not valid, it will still be included. There is no error checking.\n";
 	}
@@ -99,8 +101,19 @@ $plist->add( $dict = new CFDictionary() );
         
 	// Add manifest to production catalog by default
 	$dict->add( 'catalogs', $array = new CFArray() );
-	$array->add( new CFString( $catalog ) );
-    
+	if ( $catalog1 != "" )
+		{
+			$array->add( new CFString( $catalog1 ) );
+		}
+    if ( $catalog2 != "" )
+		{
+			$array->add( new CFString( $catalog2 ) );
+		}
+	if ( $catalog3 != "" )
+		{
+			$array->add( new CFString( $catalog3 ) );
+		}
+		
 	//Add Display Name
 	$dict->add( 'display_name', new CFString( $displayname ) );
     
@@ -141,6 +154,6 @@ $plist->add( $dict = new CFDictionary() );
 	echo "Included Manifest(s): " . $manifest1 . " " . $manifest2 . " " . $manifest3 . " " . $manifest4 . "\n\n";
 	echo "0";
 	$result = 'SUCCESS';
-	logger($result, $recordname, $displayname, $catalog, $manifest1, $manifest2, $manifest3, $manifest4);
+	logger($result, $recordname, $displayname, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4);
 
 ?>
