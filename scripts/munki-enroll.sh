@@ -15,7 +15,7 @@ UPDATE_URL="$REPO_URL/munki-enroll/update.php"
 PORT=443
 #Catalogs and Manifests - Hard code these variables or write them into /private/var/root/Library/$ENROLL_PLIST.plist
 #Values set in $ENROLL_PLIST override values set here. However, if CATALOG2 is defined here, not a key in $ENROLL_PLIST.plist the value defined below will be used
-ENROLL_PLIST=consulting.artichoke.munki-enroll
+ENROLL_PLIST=domain.munki.munki-enroll
 #Default Catalog (CATALOG1) is defined in enroll.php. Define here only to override default of "production"
 CATALOG1=
 CATALOG2=
