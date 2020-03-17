@@ -26,16 +26,31 @@ Copy the "munki-enroll" folder to the root of your Munki repository (the same di
 
 Make sure your www user can write to `manifests` and `munki-enroll/logs/`
 
+Define the following in `enroll.php`:
+
+	$defaultmanifest = 'Default/Manifest';
+	$defaultcatalog = 'production';
+
 ## Client Configuration
 
-The included munki-enroll.sh script needs a couple variables set:
+The included `munki-enroll.sh` or `munki-enrollONLY.sh` scripts needs a couple variables set:
 
 	REPO_URL="https://munki.domain/repo"
 	ENROLL_URL="$REPO_URL/munki-enroll/enroll.php"
-	SUBMITURL="https://munki.domain/repo/munki-enroll/enroll.php"
+	UPDATE_URL="$REPO_URL/munki-enroll/update.php"
 	PORT=443
+	ENROLL_PLIST=domain.munki.munki-enroll (if staging a /private/var/root/Library/Preferences/$ENROLL_PLIST.plist)
 	RUNFILE=/usr/local/munki/.runfile (only if using munki-enrollONLY.sh)
 	RUNLIMIT=10 (only if using munki-enrollONLY.sh)
+	
+Optionally you can add these as well:
+	CATALOG1=(This will be set for you in `enroll.php`)
+	CATALOG2=
+	CATALOG2=
+	MANIFEST1=(This will be set for you in `enroll.php`)
+	MANIFEST2=
+	MANIFEST3=
+	MANIFEST4=
 
 If `munki-enroll.sh`runs anywhere but from `/usr/munki/conditions` it will copy itself into `/usr/munki/conditions` to keep your computers enrolled/display_name up-to-date.
 
