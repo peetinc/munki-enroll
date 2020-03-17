@@ -44,6 +44,7 @@ The included `munki-enroll.sh` or `munki-enrollONLY.sh` scripts needs a couple v
 	RUNLIMIT=10 (only if using munki-enrollONLY.sh)
 	
 Optionally you can add these as well:
+
 	CATALOG1=(This will be set for you in `enroll.php`)
 	CATALOG2=
 	CATALOG2=
