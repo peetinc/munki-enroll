@@ -117,7 +117,7 @@ $plist->add( $dict = new CFDictionary() );
 	//Add Display Name
 	$dict->add( 'display_name', new CFString( $displayname ) );
     
-	//Add UUID to notes
+	//Add UUID
 	if ( $uuid != "" )
 		{
 			$dict->add( 'notes', new CFString( $uuid ) );
