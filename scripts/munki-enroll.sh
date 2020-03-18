@@ -231,3 +231,4 @@ if [ "$START_UPDATE" = "1" ]; then
 	munkiUPDATE
 fi
 #######################
+exit 0
