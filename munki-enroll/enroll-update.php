@@ -229,29 +229,4 @@ function update($manifestspath, $recordname, $displayname, $uuid, $catalog1, $ca
 		echo "INFO: End of updateManifest ... ";		
 }
 
-// end if no variables provided
-if ( $recordname == "_NOT-PROVIDED_" or $displayname == "_NOT-PROVIDED_" or $uuid == "_NOT-PROVIDED_" )
-	{
-		echo "Please provide recordname, displayname and uuid at minimum.\n";
-		echo "Checking out now.\n\n";
-		echo "1";
-		$result = 'FAILURE - NOT ENOUGH ARGUMENTS';
-		logger($result, $recordname, $displayname, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4);
-		exit(1);
-	}
-	
-// Check if manifest already exists for this machine
-echo "MUNKI-UPDATER. Checking for existing manifests ... \n\n";
-
-
-if ( file_exists( $manifestspath . $recordname ) )
-	{
-	echo "Existing Manifest found ...\n\n";
-	updateManifest($manifestspath, $recordname, $displayname, $uuid, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4);
-	}
-	else {
-	echo "ERROR: No Manifest to Update. Exit \n\n";
-	echo "1";
-	exit(1);
-	}
 ?>
