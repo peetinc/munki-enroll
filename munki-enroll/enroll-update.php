@@ -56,7 +56,8 @@ if ( $recordname == "_NOT-PROVIDED_" or $displayname == "_NOT-PROVIDED_" or $uui
 		logger($result, $recordname, $displayname, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4);
 		exit(1);
 	}
-	
+
+function existingRecordCheck($recordname, $displayname, $uuid, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4) {
 // Check if manifest already exists for this machine
 echo "MUNKI-ENROLL. Checking for existing manifests.\n\n";
 
@@ -69,7 +70,9 @@ if ( file_exists( $manifestspath . $recordname ) )
 		logger($result, $recordname, $displayname, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4);
 		exit(9);
     }
-    
+}
+
+function nestCheck($recordname, $displayname, $uuid, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4) {
 // Ensure we aren't nesting a manifest within itself
 if ( $manifest1 == $recordname or $manifest2 == $recordname or $manifest3 == $recordname or $manifest4 == $recordname )
 	{
@@ -82,6 +85,7 @@ if ( $manifest1 == $recordname or $manifest2 == $recordname or $manifest3 == $re
 		logger($result, $recordname, $displayname, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4);
 		exit(1);
 	}
+}
 
 function enroll($recordname, $displayname, $uuid, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4) {
 //A bit of verbosity never hurt anyone.
