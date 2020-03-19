@@ -45,7 +45,7 @@ $catalog2 = filter_input(INPUT_GET, 'catalog2', FILTER_SANITIZE_STRING, FILTER_F
 $catalog3 = filter_input(INPUT_GET, 'catalog3', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 $uuid = filter_input(INPUT_GET, 'uuid', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 
-
+function varCheck($recordname, $displayname, $uuid, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4) {
 // end if no variables provided
 if ( $recordname == "_NOT-PROVIDED_" or $displayname == "_NOT-PROVIDED_" or $uuid = "_NOT-PROVIDED_" )
 	{
@@ -56,6 +56,7 @@ if ( $recordname == "_NOT-PROVIDED_" or $displayname == "_NOT-PROVIDED_" or $uui
 		logger($result, $recordname, $displayname, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4);
 		exit(1);
 	}
+}
 
 function existingRecordCheck($recordname, $displayname, $uuid, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4) {
 // Check if manifest already exists for this machine
