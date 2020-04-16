@@ -163,16 +163,12 @@ munkiENROLL() {
 
 	RESULT="${SUBMIT##*$'\n'}"
     
-	if [ $RESULT = 9 ] && [[ $SCRIPT_FOLDER = /usr/local/munki/conditions ]]; then	
-		echo "Manifest exists. Removing script from /usr/local/munki/conditions."
-		rm ${0}
-		[[ -f "$RUNFILE" ]] && rm "$RUNFILE"
+	if [ $RESULT = 9 ]; then	
+		echo "Manifest $RECORDNAME for $DISPLAYNAME exists."
 		exit $RESULT
 	fi
-	if [ $RESULT = 0 ] && [[ $SCRIPT_FOLDER = /usr/local/munki/conditions ]]; then
-		echo "Manifest created. Removing script from /usr/local/munki/conditions."
-		rm ${0}
-		[[ -f "$RUNFILE" ]] && rm "$RUNFILE"
+	if [ $RESULT = 0 ]; then
+		echo "Manifest $RECORDNAME for $DISPLAYNAME successfully created."
 		exit $RESULT
 	fi
 }
