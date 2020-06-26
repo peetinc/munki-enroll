@@ -25,10 +25,10 @@ if (!($displayname = filter_input(INPUT_GET, 'displayname', FILTER_SANITIZE_STRI
 	{
 		$displayname = '_NOT-PROVIDED_'; 
 	}
-//if $catalog is not passed, set to $defaultcatalog
-if (!($catalog = filter_input(INPUT_GET, 'catalog', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)))
+//if $catalog1 is not passed, set to $defaultcatalog
+if (!($catalog1 = filter_input(INPUT_GET, 'catalog1', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)))
 	{
-		$catalog = $defaultcatalog; 
+		$catalog1 = $defaultcatalog; 
 	}
 //if $manifest1 is not passed, set to $defaultmanifest
 if (!($manifest1 = filter_input(INPUT_GET, 'manifest1', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES))) 
@@ -38,14 +38,18 @@ if (!($manifest1 = filter_input(INPUT_GET, 'manifest1', FILTER_SANITIZE_STRING, 
 $manifest2 = filter_input(INPUT_GET, 'manifest2', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 $manifest3 = filter_input(INPUT_GET, 'manifest3', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 $manifest4 = filter_input(INPUT_GET, 'manifest4', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
-$uuid = filter_input(INPUT_GET, 'uuid', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+$catalog2 = filter_input(INPUT_GET, 'catalog2', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+$catalog3 = filter_input(INPUT_GET, 'catalog3', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+//if $uuid is not passed, set to _NOT-PROVIDED_
+if (!($uuid = filter_input(INPUT_GET, 'uuid', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES))) 
+	{
+		$uuid = '_NOT-PROVIDED_'; 
+	}
 
 //Functions
-function updateManifest() {
-	//There's probably a better way to pull these variables in
-	global $manifestspath, $recordname, $displayname, $uuid, $catalog, $manifest1, $manifest2, $manifest3, $manifest4;
+function updateManifest($manifestspath, $recordname, $displayname, $uuid, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4) {
 	// Read existing manifest
-	$manifestplist = new CFPropertyList( $manifestspath.$recordname );
+	$manifestplist = new CFPropertyList( $manifestspath . $recordname );
 	////
 	//Just a handy way to visualize the existing manifest.
 	//echo '<pre>';
@@ -65,7 +69,8 @@ function updateManifest() {
 		echo "UUID match ... ";
 		}
 		else {
-		echo "UUID mismatch. We out ... Exit 99";
+		echo "UUID mismatch. We out ... Exit \n\n";
+		echo "99";
 		exit(99);
 	}
 	// Check diskplay_name, update in array if needed
@@ -106,13 +111,13 @@ function updateManifest() {
 }
 
 // end if no variables provided
-if ( $recordname == "_NOT-PROVIDED_" or $displayname == "_NOT-PROVIDED_" )
+if ( $recordname == "_NOT-PROVIDED_" or $displayname == "_NOT-PROVIDED_" or $uuid == "_NOT-PROVIDED_" )
 	{
-		echo "Please provide recordname, displayname at minimum.\n";
+		echo "Please provide recordname, displayname and uuid at minimum.\n";
 		echo "Checking out now.\n\n";
 		echo "1";
 		$result = 'FAILURE - NOT ENOUGH ARGUMENTS';
-		logger($result, $recordname, $displayname, $catalog, $manifest1, $manifest2, $manifest3, $manifest4);
+		logger($result, $recordname, $displayname, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4);
 		exit(1);
 	}
 	
@@ -123,14 +128,16 @@ echo "MUNKI-UPDATER. Checking for existing manifests ... \n\n";
 if ( file_exists( $manifestspath . $recordname ) )
 	{
 	echo "Existing Manifest found ...\n\n";
-	updateManifest();
+	updateManifest($manifestspath, $recordname, $displayname, $uuid, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4);
 	}
 	else {
-	echo "ERROR: No Manifest to Update. Exit 1";
+	echo "ERROR: No Manifest to Update. Exit \n\n";
+	echo "1";
 	exit(1);
 	}
 
-echo "INFO: End of update.php. Exit 0";
+echo "INFO: End of update.php. Exit \n\n";
+echo "0";
 exit(0);
 
 ?>
