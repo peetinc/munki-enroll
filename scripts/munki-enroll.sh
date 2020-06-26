@@ -15,7 +15,7 @@ UPDATE_URL="$REPO_URL/munki-enroll/update.php"
 PORT=443
 #Catalogs and Manifests - Hard code these variables or write them into /private/var/root/Library/$ENROLL_PLIST.plist
 #Values set in $ENROLL_PLIST override values set here. However, if CATALOG2 is defined here, not a key in $ENROLL_PLIST.plist the value defined below will be used
-ENROLL_PLIST=domain.munki.munki-enroll
+ENROLL_PLIST="domain.munki.munki-enroll"
 #Default Catalog (CATALOG1) is defined in enroll.php. Define here only to override default of "production"
 CATALOG1=
 CATALOG2=
@@ -70,6 +70,14 @@ MANAGEDINSTALL_DIR="$(defaults read /Library/Preferences/ManagedInstalls Managed
 # Make sure we're outputting our information to "ConditionalItems.plist" 
 # (plist is left off since defaults requires this)
 CONDITIONALITEMS_PLIST="$MANAGEDINSTALL_DIR/ConditionalItems"
+# Make sure $MANAGEDINSTALL_DIR exists
+# This will write the munki-enroll conditional items to /tmp/ConditionalItems.plist in case of a race condition.
+if ! [ -z "$MANAGEDINSTALL_DIR" ] && [ ! -d "$MANAGEDINSTALL_DIR" ] ;then
+	echo "Create_Directory- $MANAGEDINSTALL_DIR"
+	mkdir -p "$MANAGEDINSTALL_DIR"
+	else
+	CONDITIONALITEMS_PLIST="/tmp/ConditionalItems"
+fi
 #######################
 #######################
 ## Functions
@@ -126,8 +134,7 @@ manifestTEST() {
 		rm -rf "$TMP_DOWNLOAD"
 		if [ $MANIFEST_DISPLAYNAME = $DISPLAYNAME ]; then
 			defaults write "$CONDITIONALITEMS_PLIST" "munki-enroll-DISPLAYNAME" -string "$DISPLAYNAME"
-			plutil -convert xml1 "$CONDITIONALITEMS_PLIST".plist
-			
+			plutil -convert xml1 "$CONDITIONALITEMS_PLIST".plist		
 		else
 			START_UPDATE=1
 		fi
@@ -163,16 +170,12 @@ munkiENROLL() {
 
 	RESULT="${SUBMIT##*$'\n'}"
     
-	if [ $RESULT = 9 ] && [[ $SCRIPT_FOLDER = /usr/local/munki/conditions ]]; then	
-		echo "Manifest exists. Removing script from /usr/local/munki/conditions."
-		rm ${0}
-		[[ -f "$RUNFILE" ]] && rm "$RUNFILE"
+	if [ $RESULT = 9 ]; then	
+		echo "Manifest $RECORDNAME for $DISPLAYNAME exists."
 		exit $RESULT
 	fi
-	if [ $RESULT = 0 ] && [[ $SCRIPT_FOLDER = /usr/local/munki/conditions ]]; then
-		echo "Manifest created. Removing script from /usr/local/munki/conditions."
-		rm ${0}
-		[[ -f "$RUNFILE" ]] && rm "$RUNFILE"
+	if [ $RESULT = 0 ]; then
+		echo "Manifest $RECORDNAME for $DISPLAYNAME successfully created."
 		exit $RESULT
 	fi
 }
@@ -230,4 +233,7 @@ fi
 if [ "$START_UPDATE" = "1" ]; then
 	munkiUPDATE
 fi
+# If we make it here we didn't need anything
+echo "No enroll or update needed."
+exit 0
 #######################
