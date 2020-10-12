@@ -29,7 +29,7 @@ MANIFEST4=
 #######################
 ## Runtime variables
 # folder containging script
-SCRIPT_FOLDER=`dirname "$0"`
+SCRIPT_FOLDER=$(dirname "$0")
 # Make sure we can reach the $ENROLL_URL $PORT
 SHORT_URL=$(/bin/echo "$ENROLL_URL" | /usr/bin/awk -F/ '{print $3}')
 PORT_TEST=$(/usr/bin/nc -z "$SHORT_URL" "$PORT" >/dev/null 2>&1) 
