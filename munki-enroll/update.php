@@ -74,6 +74,7 @@ function updateManifest($manifestspath, $recordname, $displayname, $uuid, $catal
 	if ( $olduuid = '_OLDUUID-NOT-FOUND_' ) {
 		echo "UUID missing. Updating UUID to $uuid ... ";
 		$manifestarrayNEW[ 'uuid' ] = $uuid;
+		$manifestarrayNEW[ 'notes' ] = $uuid;
 		}
 	// Check diskplay_name, update in array if needed
 	if ( $displayname == $olddisplayname ) {
