@@ -65,14 +65,16 @@ function updateManifest($manifestspath, $recordname, $displayname, $uuid, $catal
 		$olduuid = '_OLDUUID-NOT-FOUND_';
 	}
 	// check UUID's Bail if not the same
-	if ( $uuid == $olduuid ) {
-		echo "UUID match ... ";
-		}
-		else {
-		echo "UUID mismatch. We out ... Exit \n\n";
+	if ( $uuid !== $olduuid && $olduuid != '_OLDUUID-NOT-FOUND_' ) {
+		echo "UUID mismatch! We out ... Exit \n\n";
 		echo "99";
 		exit(99);
 	}
+	// Check UUID is missing add if it is
+	if ( $olduuid = '_OLDUUID-NOT-FOUND_' ) {
+		echo "UUID missing. Updating UUID to $uuid ... ";
+		$manifestarrayNEW[ 'uuid' ] = $uuid;
+		}
 	// Check diskplay_name, update in array if needed
 	if ( $displayname == $olddisplayname ) {
 		echo "DisplayName match ... ";
@@ -92,7 +94,9 @@ function updateManifest($manifestspath, $recordname, $displayname, $uuid, $catal
 		$td = new CFTypeDetector();
 		$guessedStructure = $td->toCFType( $manifestarrayNEW );
 		$newmanifestplist->add( $guessedStructure );
-		$newmanifestplist->saveXML( $manifestspath . $recordname.'.tmp' );
+		$xml = $newmanifestplist->toXML($formatted=true);
+		file_put_contents($manifestspath . $recordname.'.tmp', $xml);
+		//$newmanifestplist->saveXML( $manifestspath . $recordname.'.tmp' );
 		
 		if (!unlink($manifestspath.$recordname)) {  
     		echo ("ERROR: $manifestspath.$recordname cannot be deleted ... ");  

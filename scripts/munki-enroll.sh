@@ -19,7 +19,7 @@ ENROLL_PLIST="domain.munki.munki-enroll"
 #Default Catalog (CATALOG1) is defined in enroll.php. Define here only to override default of "production"
 CATALOG1=
 CATALOG2=
-CATALOG2=
+CATALOG3=
 #Default Manifest (MANIFEST1) is defined in enroll.php. Define here only to override default of "YOUR/DEFAULT/MANIFEST"
 MANIFEST1=
 MANIFEST2=
@@ -89,7 +89,7 @@ rootCheck() {
 		exit 1
 		else
 		chown root:wheel "${0}"
-		chmod 750 "${0}"
+		chmod 755 "${0}"
 	fi
 }
 # conditionInstall 
@@ -131,12 +131,26 @@ manifestTEST() {
 		curl  --silent --user "$AUTH" "$REPO_URL/manifests/$RECORDNAME" -o "$TMP_DOWNLOAD/$RECORDNAME.plist"
 		#plutil -convert binary1 "$TMP_DOWNLOAD/$RECORDNAME"
 		MANIFEST_DISPLAYNAME=$(defaults read "$TMP_DOWNLOAD/$RECORDNAME.plist" "display_name")
+		MANIFEST_UUID=$(defaults read "$TMP_DOWNLOAD/$RECORDNAME.plist" "uuid" 2>/dev/null)
 		rm -rf "$TMP_DOWNLOAD"
+		if [ -z $MANIFEST_UUID ]; then
+			START_UPDATE=1
+			else
+		if [ $MANIFEST_UUID = $UUID ]; then
+			defaults write "$CONDITIONALITEMS_PLIST" "munki-enroll-UUID" -string "$UUID"
+			plutil -convert xml1 "$CONDITIONALITEMS_PLIST".plist
+			else
+			echo "Error: Manifest UUID does not match computer UUID."	
+			echo "exit 99"
+			echo "99"
+			exit 99
+		fi	
 		if [ $MANIFEST_DISPLAYNAME = $DISPLAYNAME ]; then
 			defaults write "$CONDITIONALITEMS_PLIST" "munki-enroll-DISPLAYNAME" -string "$DISPLAYNAME"
 			plutil -convert xml1 "$CONDITIONALITEMS_PLIST".plist		
-		else
+			else
 			START_UPDATE=1
+		f
 		fi
 	else
 		START_ENROLL=1
