@@ -150,7 +150,7 @@ manifestTEST() {
 			plutil -convert xml1 "$CONDITIONALITEMS_PLIST".plist		
 			else
 			START_UPDATE=1
-		f
+		fi
 		fi
 	else
 		START_ENROLL=1
