@@ -156,7 +156,7 @@ $plist->add( $dict = new CFDictionary() );
 	echo "New manifest display_name: " . $displayname . "\n";
 	echo "Included Manifest(s): " . $manifest1 . " " . $manifest2 . " " . $manifest3 . " " . $manifest4 . "\n\n";
 	echo "0";
-	$result = 'SUCCESS - NEW RECORD CREATED';
+	$result = 'SUCCESS - RECORD CREATED';
 	logger($result, $recordname, $displayname, $uuid, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4);
 
 ?>
