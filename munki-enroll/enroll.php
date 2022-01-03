@@ -38,17 +38,20 @@ $manifest3 = filter_input(INPUT_GET, 'manifest3', FILTER_SANITIZE_STRING, FILTER
 $manifest4 = filter_input(INPUT_GET, 'manifest4', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 $catalog2 = filter_input(INPUT_GET, 'catalog2', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 $catalog3 = filter_input(INPUT_GET, 'catalog3', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
-$uuid = filter_input(INPUT_GET, 'uuid', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
-
+//if $uuid is not passed, set to _NOT-PROVIDED_
+if (!($uuid = filter_input(INPUT_GET, 'uuid', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES))) 
+	{
+		$uuid = '_NOT-PROVIDED_'; 
+	}
 
 // end if no variables provided
-if ( $recordname == "_NOT-PROVIDED_" or $displayname == "_NOT-PROVIDED_" )
+if ( $recordname == "_NOT-PROVIDED_" or $displayname == "_NOT-PROVIDED_" or $uuid == "_NOT-PROVIDED_" )
 	{
-		echo "Please provide recordname, displayname at minimum.\n";
+		echo "Please provide recordname, displayname and uuid at minimum.\n";
 		echo "Checking out now.\n\n";
 		echo "1";
 		$result = 'FAILURE - NOT ENOUGH ARGUMENTS';
-		logger($result, $recordname, $displayname, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4);
+		logger($result, $recordname, $displayname, $uuid, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4);
 		exit(1);
 	}
 	
@@ -62,7 +65,7 @@ if ( file_exists( $manifestspath . $recordname ) )
 		echo "You're trying to be naughty.\n";
 		echo "9";
 		$result = 'FAILURE - EXISTING MANIFEST';
-		logger($result, $recordname, $displayname, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4);
+		logger($result, $recordname, $displayname, $uuid, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4);
 		exit(9);
     }
     
@@ -75,7 +78,7 @@ if ( $manifest1 == $recordname or $manifest2 == $recordname or $manifest3 == $re
 		echo "Checking out now.\n\n";
 		echo "1";
 		$result = 'FAILURE - RECURSIVE MANIFSEST';
-		logger($result, $recordname, $displayname, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4);
+		logger($result, $recordname, $displayname, $uuid, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4);
 		exit(1);
 	}
 
@@ -154,6 +157,6 @@ $plist->add( $dict = new CFDictionary() );
 	echo "Included Manifest(s): " . $manifest1 . " " . $manifest2 . " " . $manifest3 . " " . $manifest4 . "\n\n";
 	echo "0";
 	$result = 'SUCCESS';
-	logger($result, $recordname, $displayname, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4);
+	logger($result, $recordname, $displayname, $uuid, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4);
 
 ?>
