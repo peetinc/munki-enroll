@@ -68,6 +68,8 @@ function updateManifest($manifestspath, $recordname, $displayname, $uuid, $catal
 	if ( $uuid !== $olduuid && $olduuid != '_OLDUUID-NOT-FOUND_' ) {
 		echo "UUID mismatch! We out ... Exit \n\n";
 		echo "99";
+		$result = 'FAILURE - UUID MISMATCH';
+		logger($result, $recordname, $displayname, $catalog1, $catalog2, $catalog3, $manifest1, $manifest2, $manifest3, $manifest4);
 		exit(99);
 	}
 	// Check UUID is missing add if it is
