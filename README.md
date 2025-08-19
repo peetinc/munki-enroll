@@ -1,84 +1,233 @@
-# munki-enroll
-A lovingly updated `munki-enroll`.
+# munki-enroll v2.0.0
+A modernized, secure, and robust Munki enrollment system with UUID-based manifest verification.
 
-A set of scripts to automatically enroll clients in Munki, allowing for a very flexible manifest structure.
+## Overview
 
-This version is a deeply modified rewrite of the original, Copyright (c) 2012 Cody Eding, to suit my (and hopefully your) needs .
-See below and LICENSE file for licensing details.
+Munki Enroll v2.0.0 is a complete rewrite of the enrollment system, providing automatic client enrollment in Munki with enhanced security, standardized HTTP status codes, and comprehensive error handling. This version represents a significant evolution from the original concept by Cody Eding (2012), incorporating modern best practices and security standards.
+
+**Key improvements in v2.0.0:**
+- 🔒 UUID-based manifest verification prevents unauthorized access
+- 🌐 RESTful API with standardized HTTP status codes
+- 📊 Comprehensive logging with rotation and syslog integration
+- 🔄 Automatic check-in tracking with fetch operations
+- ⚡ Atomic file operations prevent corruption
+- 🛡️ Enhanced security with path traversal protection
+- 📝 JSON responses for better API integration
+
+*This version was developed by Artichoke Consulting with assistance from Claude Opus 4.1, ensuring modern coding standards and security best practices.*
 
 ## Essential Reading
 
-Before you even think about using any Munki Enroll, or anything like these projects, please read [An opinionated guide to Munki manifests](https://groob.io/posts/manifest-guide/) and [Another opinionated guide to Munki manifests](http://technology.siprep.org/another-opinionated-guide-to-munki-manifests/) first.
+Before implementing any Munki enrollment system, please read:
+- [An opinionated guide to Munki manifests](https://groob.io/posts/manifest-guide/)
+- [Another opinionated guide to Munki manifests](http://technology.siprep.org/another-opinionated-guide-to-munki-manifests/)
 
-## Why Yet Another Munki Enroll?
+## System Requirements
 
-I just needed something a bit cleaner with some error checking and recovery. I also wanted something to turn run as a conditional item so it would/could/can/does update the display_name of the record when it's changed. Just a preference for my environments.
+### Server Requirements
+- PHP 7.2 or higher
+- Web server (Apache/Nginx) with PHP support
+- [TECLIB/CFPropertyList](https://github.com/TECLIB/CFPropertyList) library
+- Write access to manifest and log directories
+- Ubuntu/Debian recommended (also supports RHEL/CentOS/macOS)
 
-## How does this differ from regular Munki Enroll's?
+### Client Requirements
+- macOS 10.12 or later
+- Munki 5.x or higher
+- Root access for enrollment script execution
 
-Like [aysiu/munki-serial-enroll](https://github.com/aysiu/munki-serial-enroll/) and [grahampugh/munki-enroll](https://github.com/grahampugh/munki-enroll/), [peetinc/munki-enroll](https://github.com/peetinc/munki-enroll/) focuses on a one manifest per client workflow. See above for more reading, but unlike [aysiu/munki-serial-enroll](https://github.com/aysiu/munki-serial-enroll/), this project uses [TECLIB/CFPropertyList](https://github.com/TECLIB/CFPropertyList)], it may be a bit long in tooth, but it profides an infinitely more flexibly fremwork for creating and updating manifests.
+## Usage
 
-## Installation
+### Initial Enrollment
 
-Munki Enroll requires PHP to be working on the webserver hosting your Munki repository. As well as www write access to `manifests`.
+Deploy the script to client machines and run:
+```bash
+sudo /path/to/munki-enroll.sh
+```
 
-Copy the "munki-enroll" folder to the root of your Munki repository (the same directory as pkgs, pkginfo, manifests and catalogs). 
+The script will:
+1. Verify connectivity to the enrollment server
+2. Gather machine information (serial, UUID, computer name)
+3. Create or update the manifest on the server
+4. Install itself as a Munki condition for ongoing updates
 
-Make sure your www user can write to `manifests` and `munki-enroll/logs/`
+### Automatic Features
 
-Define the following in `enroll.php`:
+- **Auto-installation**: Script copies itself to `/usr/local/munki/conditions/` if not already there
+- **Display name updates**: Automatically updates when computer name changes
+- **Check-in tracking**: Records last check-in time with every fetch operation
+- **UUID verification**: Prevents manifest hijacking between machines
 
-	$defaultmanifest = 'Default/Manifest';
-	$defaultcatalog = 'production';
+## API Endpoints
 
-## Client Configuration
+### Enrollment (Default)
+```bash
+GET /munki-enroll.php?recordname=SERIAL&displayname=NAME&uuid=UUID
+Optional: &catalog1=production&manifest1=site_default
+```
+**Returns:** HTTP 201 (Created) or 409 (Already Exists)
 
-The included `munki-enroll.sh` or `munki-enrollONLY.sh` scripts needs a couple variables set:
+### Update
+```bash
+GET /munki-enroll.php?function=update&recordname=SERIAL&displayname=NAME&uuid=UUID
+```
+**Returns:** HTTP 200 (Success) or 403 (UUID Mismatch)
 
-	REPO_URL="https://munki.domain/repo"
-	ENROLL_URL="$REPO_URL/munki-enroll/enroll.php"
-	UPDATE_URL="$REPO_URL/munki-enroll/update.php"
-	PORT=443
-	ENROLL_PLIST=domain.munki.munki-enroll (if staging a /private/var/root/Library/Preferences/$ENROLL_PLIST.plist)
-	RUNFILE=/usr/local/munki/.runfile (only if using munki-enrollONLY.sh)
-	RUNLIMIT=10 (only if using munki-enrollONLY.sh)
-	
-Optionally you can add these as well:
+### Fetch
+```bash
+GET /munki-enroll.php?function=fetch&recordname=SERIAL&uuid=UUID
+```
+**Returns:** HTTP 200 + XML manifest or 403 (UUID Mismatch)
 
-	CATALOG1=(This will be set for you in `enroll.php`)
-	CATALOG2=
-	CATALOG2=
-	MANIFEST1=(This will be set for you in `enroll.php`)
-	MANIFEST2=
-	MANIFEST3=
-	MANIFEST4=
+### Check-in
+```bash
+GET /munki-enroll.php?function=checkin&recordname=SERIAL
+```
+**Returns:** HTTP 200 (Success)
 
-If `munki-enroll.sh`runs anywhere but from `/usr/munki/conditions` it will copy itself into `/usr/munki/conditions` to keep your computers enrolled/display_name up-to-date.
+## HTTP Status Codes
 
-If `munki-enrollONLY.sh` fails to contact your `SUBMITURL`on `PORT`, it moves itself into `/usr/munki/conditions` and runs as any other Conditional Items. If it successfully creates a manifest or finds that there's a manifest with its `RECORDNAME` (defaulted to computer serial number) it deletes itself from `/usr/munki/conditions`. 
+| Code | Meaning | Description |
+|------|---------|-------------|
+| 200 | OK | Successful update, fetch, or check-in |
+| 201 | Created | New manifest created successfully |
+| 400 | Bad Request | Missing or invalid parameters |
+| 403 | Forbidden | UUID mismatch or authentication failure |
+| 404 | Not Found | Manifest does not exist |
+| 409 | Conflict | Manifest already exists (on enrollment) |
+| 500 | Server Error | Internal server error |
 
-## Things to Know
+## Exit Codes (Client Script)
 
-Currently theres a bit of error checking both server-side in `enroll.php` and in `munki-enroll.sh`:
-- `enroll.php` won't let an existing record be overwritten.
-- `enroll.php` won't run without `RECORDNAME` , `DISPLAYNAME` and `UUID` .
-- `munki-enroll.sh` will drop into `/usr/munki/conditions` if it runs from anywhere but `/usr/munki/conditions` and run as a Conditional Item with managedsoftwareupdate.
-- `munki-enrollONLY.sh` will drop into `/usr/munki/conditions` if it fails to contact your `SUBMITURL`on `PORT` and will run as a Conditional Item with managedsoftwareupdate.
-- Theres a `RUNLIMIT` for `munki-enrollONLY.sh` when running from `/usr/munki/conditions` as well. If exceeded, the `munki-enroll.sh` gives up and self destructs.
+| Code | Meaning | Description |
+|------|---------|-------------|
+| 0 | Success | Operation completed successfully |
+| 1 | General Error | Connection, validation, or unexpected issues |
+| 2 | Not Found | Manifest not found on server (404) |
+| 99 | UUID Mismatch | Security violation - manifest locked to different device |
 
-Some niceties and expectations:
-- `update.php` validates requests with the `UUID` of the computer. It currently only updates `display_name`.
-- `enroll.php` has a logging facility that logs to `/munki-enroll/log/munki-enroll.log` just in case there are some rouge requests out there
-- `enroll.php` as a few exit codes:
-	- `0` successful creation of a new manifest
-	- `1` not enough arguments
-	- `9` manifest exists 
-- `enroll.php` can accept up to four included manifests. Simply provide `CATALOG1`, `CATALOG2` and/or `CATALOG3` as well as `MANIFEST1`, `MANIFEST2`, `MANIFEST3` and/or `MANIFEST4` variables in the script. `CATALOG1`and `MANIFEST1` defaults are built into `enroll.php`
-- `munki-enroll.sh` and `munki-enrollONLY.sh` will read `CATALOG1`, `CATALOG2` and/or `CATALOG3` as well as `MANIFEST1`, `MANIFEST2`, `MANIFEST3` and/or `MANIFEST4` from `/private/var/root/Library/Preferences/$ENROLLPLIST.plist`
-- `munki-enroll.sh` and `munki-enrollONLY.sh` must be run as root.
-- `munki-enroll.sh` and `munki-enrollONLY.sh` pushes the computer `UUID` to `enroll.php` which drops it into a `notes` and `uuid` strings.
-- `munki-enroll.sh` and `munki-enrollONLY.sh` pulls `AdditionalHttpHeaders` from `ManagedInstalls` with the expectation that your repo is protected by HTTP Basic Authentication. If you are limiting access to `enroll.php` without Basic Authentication, simply remove `-u "$AUTH" \` from the curl statements.
+## Security Features
 
-## [License](https://github.com/peetinc/munki-enroll/blob/master/LICENSE)
+### UUID Verification
+Each manifest is locked to a specific hardware UUID, preventing:
+- Manifest hijacking between devices
+- Unauthorized access to other machines' configurations
+- Accidental cross-contamination of settings
 
-Munki Enroll, like the contained CFPropertyList project, is published under the [MIT License](http://www.opensource.org/licenses/mit-license.php).
+### Path Traversal Protection
+All file operations validate paths to prevent directory traversal attacks.
+
+### Input Sanitization
+- Display names limited to 100 characters
+- Special characters filtered
+- SQL injection prevention (no database used)
+- XSS protection on all inputs
+
+### Secure Logging
+- Automatic log rotation at 10MB
+- JSON structured logging
+- PII protection and sanitization
+- Dual logging to file and syslog
+
+## Logging
+
+### Server Logs
+- **Location**: `/var/log/munki-enroll/munki-enroll.log`
+- **Format**: JSON structured logging
+- **Rotation**: Automatic at 10MB, keeps 5 versions
+- **Syslog**: Also logs to syslog facility LOCAL0
+
+### Client Logs
+- **Location**: `/var/log/munki-enroll/munki-enroll.log`
+- **Verbosity**: Configurable (0=quiet, 1=normal, 2=debug)
+- **Rotation**: Automatic at 10MB, keeps 5 versions
+
+### Log Entry Example
+```json
+{
+    "timestamp": "2025-01-09T12:00:00Z",
+    "result": "SUCCESS - RECORD CREATED",
+    "recordname": "C02ABC123DEF",
+    "displayname": "John-MacBook-Pro",
+    "uuid": "550e8400-e29b-41d4-a716-446655440000",
+    "catalogs": "production",
+    "manifests": "Management/Mandatory,Site/Building-A",
+    "ip": "192.168.1.100",
+    "user": "munki",
+    "user_agent": "curl/7.64.1"
+}
+```
+
+## Troubleshooting
+
+### Common Issues
+
+**403 Forbidden - UUID Mismatch**
+- Cause: Manifest is locked to a different machine
+- Solution: Delete the existing manifest or contact administrator
+
+**404 Not Found**
+- Cause: Manifest doesn't exist on server
+- Solution: Run enrollment to create manifest
+
+**Connection Failed**
+- Check network connectivity
+- Verify REPO_URL and PORT settings
+- Check firewall rules
+- Verify SSL certificates
+
+### Debug Mode
+
+Enable debug logging in the client script:
+```bash
+VERBOSITY_LEVEL=2  # Line 67 in munki-enroll.sh
+```
+
+Enable debug mode in PHP (development only):
+```php
+// Uncomment lines 24-25 in munki-enroll.php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+```
+
+### Verify Installation
+
+Test the API directly:
+```bash
+# Test connectivity
+curl -I https://munki.yourdomain.com/repo/munki-enroll/munki-enroll.php
+
+# Test enrollment (will fail without valid parameters)
+curl "https://munki.yourdomain.com/repo/munki-enroll/munki-enroll.php?recordname=TEST&displayname=Test&uuid=test-uuid"
+```
+
+## License
+
+Munki Enroll v2.0.0, like the contained CFPropertyList project, is published under the [MIT License](http://www.opensource.org/licenses/mit-license.php).
+
+Original concept Copyright (c) 2012 Cody Eding  
+This version Copyright (c) 2025 Artichoke Consulting
+
+## Acknowledgments
+
+- Original [munki-enroll](https://github.com/edingc/munki-enroll) concept by Cody Eding
+- [TECLIB/CFPropertyList](https://github.com/TECLIB/CFPropertyList) for plist handling
+- The Munki community for ongoing feedback and support
+- Claude Opus 4.1 for development assistance and code review
+
+## Version History
+
+### v2.0.0 (2025-01-09)
+- Complete rewrite with modern security standards
+- UUID-based manifest verification
+- Standardized HTTP status codes
+- JSON API responses
+- Comprehensive logging system
+- Atomic file operations
+- Auto check-in with fetch
+- Enhanced error handling
+
+### v1.x (Legacy)
+- Original fork with basic enrollment
+- Display name updates
+- Conditional item support
