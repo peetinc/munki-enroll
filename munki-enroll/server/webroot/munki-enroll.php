@@ -361,7 +361,7 @@ class Validator {
     // Sanitize display name
     public static function sanitizeDisplayName($displayname) {
         $displayname = strip_tags($displayname);
-        $displayname = preg_replace('/[^\p{L}\p{N}\s\-_\.]/u', '', $displayname);
+        $displayname = preg_replace('/[^\p{L}\p{N}\s\-_\.\(\)]/u', '', $displayname);
         return substr($displayname, 0, 100);
     }
     

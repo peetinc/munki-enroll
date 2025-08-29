@@ -27,7 +27,7 @@
 #   with catalog1-3 and manifest1-4 keys for customization
 #
 # Author: Artichoke Consulting
-# Date: 2025.08.15
+# Date: 2025.08.28
 # License: MIT
 #######################################################################################
 
@@ -68,7 +68,7 @@ readonly MAX_CURL_TIME=15
 readonly LOG_FILE="/var/log/munki-enroll/munki-enroll.log"
 
 # Verbosity levels: 0=quiet (ERROR/SUCCESS only), 1=normal (no DEBUG), 2=debug (everything)
-VERBOSITY_LEVEL=1  # Set to 0 for quiet, 1 for normal, 2 for debug
+VERBOSITY_LEVEL=0  # Set to 0 for quiet, 1 for normal, 2 for debug
 
 #######################################################################################
 ## Logging Functions
@@ -318,7 +318,7 @@ getMachineInfo() {
     
     # Get computer name and sanitize
     DISPLAYNAME=$(/usr/sbin/scutil --get ComputerName 2>/dev/null || echo "Unknown-Computer")
-    DISPLAYNAME=$(sanitize_for_url "$DISPLAYNAME")
+    DISPLAYNAME=$(echo "$DISPLAYNAME" | sed 's/[^[:print:]]//g' | head -c 100)
     
     # Extract UUID from cached output
     UUID=$(echo "$hw_info" | \
@@ -432,7 +432,6 @@ get_json_message() {
 # Returns: 0 on success (manifest current), sets flags otherwise
 manifestTest() {
     # Create temp directory and set up cleanup
-    local temp_dir
     temp_dir=$(mktemp -d /tmp/munki-enroll.XXXXXX)
     trap 'rm -rf "$temp_dir"' EXIT
     
@@ -537,20 +536,20 @@ munkiEnroll() {
         --write-out "\nHTTP_CODE:%{http_code}"
     )
     
-    # URL-encode the parameters to handle all special characters properly
+    # Build unencoded parameters - curl will handle encoding with --get
     local data_params=()
-    data_params+=("recordname=$(url_encode "$RECORDNAME")")
-    data_params+=("displayname=$(url_encode "$DISPLAYNAME")")
+    data_params+=("recordname=$RECORDNAME")
+    data_params+=("displayname=$DISPLAYNAME")  # Use original displayname, not URL encoded
     data_params+=("uuid=$UUID")
     
-    # Add optional parameters with URL encoding
-    [ -n "$CATALOG1" ] && data_params+=("catalog1=$(url_encode "$CATALOG1")")
-    [ -n "$CATALOG2" ] && data_params+=("catalog2=$(url_encode "$CATALOG2")")
-    [ -n "$CATALOG3" ] && data_params+=("catalog3=$(url_encode "$CATALOG3")")
-    [ -n "$MANIFEST1" ] && data_params+=("manifest1=$(url_encode "$MANIFEST1")")
-    [ -n "$MANIFEST2" ] && data_params+=("manifest2=$(url_encode "$MANIFEST2")")
-    [ -n "$MANIFEST3" ] && data_params+=("manifest3=$(url_encode "$MANIFEST3")")
-    [ -n "$MANIFEST4" ] && data_params+=("manifest4=$(url_encode "$MANIFEST4")")
+    # Add optional parameters without URL encoding
+    [ -n "$CATALOG1" ] && data_params+=("catalog1=$CATALOG1")
+    [ -n "$CATALOG2" ] && data_params+=("catalog2=$CATALOG2")
+    [ -n "$CATALOG3" ] && data_params+=("catalog3=$CATALOG3")
+    [ -n "$MANIFEST1" ] && data_params+=("manifest1=$MANIFEST1")
+    [ -n "$MANIFEST2" ] && data_params+=("manifest2=$MANIFEST2")
+    [ -n "$MANIFEST3" ] && data_params+=("manifest3=$MANIFEST3")
+    [ -n "$MANIFEST4" ] && data_params+=("manifest4=$MANIFEST4")
     
     # Add auth if available
     if [ -n "$AUTH" ]; then
@@ -627,7 +626,7 @@ munkiEnroll() {
 munkiUpdate() {
     log_message "INFO" "Updating manifest for $DISPLAYNAME"
     
-    # Build curl command with proper escaping
+    # Build curl command
     local curl_opts=(
         --max-time "$MAX_CURL_TIME"
         --get
@@ -635,21 +634,21 @@ munkiUpdate() {
         --write-out "\nHTTP_CODE:%{http_code}"
     )
     
-    # URL-encode the parameters
+    # Build unencoded parameters - curl will handle encoding with --get
     local data_params=()
     data_params+=("function=update")
-    data_params+=("recordname=$(url_encode "$RECORDNAME")")
-    data_params+=("displayname=$(url_encode "$DISPLAYNAME")")
+    data_params+=("recordname=$RECORDNAME")
+    data_params+=("displayname=$DISPLAYNAME")  # Use original displayname, not URL encoded
     data_params+=("uuid=$UUID")
     
-    # Add optional parameters with URL encoding
-    [ -n "$CATALOG1" ] && data_params+=("catalog1=$(url_encode "$CATALOG1")")
-    [ -n "$CATALOG2" ] && data_params+=("catalog2=$(url_encode "$CATALOG2")")
-    [ -n "$CATALOG3" ] && data_params+=("catalog3=$(url_encode "$CATALOG3")")
-    [ -n "$MANIFEST1" ] && data_params+=("manifest1=$(url_encode "$MANIFEST1")")
-    [ -n "$MANIFEST2" ] && data_params+=("manifest2=$(url_encode "$MANIFEST2")")
-    [ -n "$MANIFEST3" ] && data_params+=("manifest3=$(url_encode "$MANIFEST3")")
-    [ -n "$MANIFEST4" ] && data_params+=("manifest4=$(url_encode "$MANIFEST4")")
+    # Add optional parameters without URL encoding
+    [ -n "$CATALOG1" ] && data_params+=("catalog1=$CATALOG1")
+    [ -n "$CATALOG2" ] && data_params+=("catalog2=$CATALOG2")
+    [ -n "$CATALOG3" ] && data_params+=("catalog3=$CATALOG3")
+    [ -n "$MANIFEST1" ] && data_params+=("manifest1=$MANIFEST1")
+    [ -n "$MANIFEST2" ] && data_params+=("manifest2=$MANIFEST2")
+    [ -n "$MANIFEST3" ] && data_params+=("manifest3=$MANIFEST3")
+    [ -n "$MANIFEST4" ] && data_params+=("manifest4=$MANIFEST4")
     
     if [ -n "$AUTH" ]; then
         curl_opts+=(--user "$AUTH")
